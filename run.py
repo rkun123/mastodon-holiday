@@ -6,8 +6,11 @@ from datetime import date, timedelta
 global MASTODON_ACCESSTOKEN
 global MASTODON_BASEURL
 global MASTODON_ADMIN
+API_BASEURL = "https://holidays-jp.github.io"
 
-def getHolidays(url):
+
+def getHolidays():
+    url = "{}/api/v1/date.json".format(API_BASEURL)
     r = requests.get(url)
     try:
         data = r.json()
@@ -21,7 +24,7 @@ def errorToot(content):
     url = "{}/api/v1/statuses".format(MASTODON_BASEURL)
     text = ("@rkun@mastodon.compositecomputer.club " + str(content))[:500]
     body = {
-        "status": ,
+        "status": text,
         "visibility": "direct",
     }
     r = requests.post(url, headers = {
@@ -33,7 +36,7 @@ def errorToot(content):
 
 def toot(content):
     print(MASTODON_ACCESSTOKEN)
-    url = "{}/api/v1statuses".format(MASTODON_BASEURL)
+    url = "{}/api/v1/statuses".format(MASTODON_BASEURL)
     body = {
         "status": content,
         "visibility": "private",
@@ -49,14 +52,13 @@ def toot(content):
 if __name__ == "__main__":
     load_dotenv(verbose=True)
     MASTODON_ACCESSTOKEN = os.getenv("MASTODON_ACCESSTOKEN")
-    MASTODON_BASEURL = os.getenv("MASTODON_BASEURL")
     MASTODON_ADMIN = os.getenv("MASTODON_ADMIN")
     print(str(date.today()))
-    print(getHolidays("{}/api/v1/date.json".format(os.getenv("API_BASEURL"))))
+    print(getHolidays())
 
     if os.getenv("API_BASEURL") != None:
         try:
-            holidays = getHolidays("{}/api/v1/date.json".format(os.getenv("API_BASEURL")))
+            holidays = getHolidays()
             # holiday = holidays[str(date.today())]
             holiday = holidays[str(date.today())]
             print(holiday)
