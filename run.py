@@ -20,9 +20,8 @@ def getHolidays():
 
 
 def errorToot(content):
-    print(MASTODON_ACCESSTOKEN)
     url = "{}/api/v1/statuses".format(MASTODON_BASEURL)
-    text = ("@rkun@mastodon.compositecomputer.club " + str(content))[:500]
+    text = ("{} ".format(MASTODON_ADMIN) + str(content))[:500]
     body = {
         "status": text,
         "visibility": "direct",
@@ -50,23 +49,26 @@ def toot(content):
 
 
 if __name__ == "__main__":
-    load_dotenv(verbose=True)
+    if os.getenv("MASTODON_ACCESSTOKEN") is None and os.getenv("MASTODON_BASEURL") is None and os.getenv("MASTODON_ADMIN") is None:
+        load_dotenv(verbose=True)
     MASTODON_ACCESSTOKEN = os.getenv("MASTODON_ACCESSTOKEN")
+    MASTODON_BASEURL = os.getenv("MASTODON_BASEURL")
     MASTODON_ADMIN = os.getenv("MASTODON_ADMIN")
     print(str(date.today()))
-    print(getHolidays())
+    print("MASTODON_ACCESSTOKEN: {}".format(MASTODON_ACCESSTOKEN))
+    print("MASTODON_BASEURL: {}".format(MASTODON_BASEURL))
+    print("MASTODON_ADMIN: {}".format(MASTODON_ADMIN))
 
-    if os.getenv("API_BASEURL") != None:
-        try:
-            holidays = getHolidays()
-            # holiday = holidays[str(date.today())]
-            holiday = holidays[str(date.today())]
-            print(holiday)
-            toot("きょうは{}です".format(holiday))
-        except KeyError:
-            print("Today is not holiday")
-            print("Stop")
-        except Exception as e:
-            print("Error occured")
-            errorToot(e)
-            print(e)
+    try:
+        holidays = getHolidays()
+        # holiday = holidays[str(date.today())]
+        holiday = holidays[str(date.today())]
+        print(holiday)
+        toot("きょうは{}です".format(holiday))
+    except KeyError:
+        print("Today is not holiday")
+        print("Stop")
+    except Exception as e:
+        print("Error occured")
+        errorToot(e)
+        print(e)
